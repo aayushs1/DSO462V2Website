@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{{ chat.title }} - GoGoPrint</title>
+    <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/white_logo.png') }}">
+</head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/white_logo.png') }}" alt="GoGoPrint Logo" width="40" height="40">
+            <div class="logo-text">GoGoPrint</div>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="new-chat-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            New Chat
+        </a>
+
+        <div class="history">
+            <h3 class="history-title">Recent Chats</h3>
+            {% for recent_chat in recent_chats %}
+            <a href="{{ url_for('view_chat', chat_id=recent_chat._id) }}" class="chat-history-item {% if recent_chat._id == chat._id %}active{% endif %}">
+                <img src="{{ url_for('static', filename='img/' ~ recent_chat.image) }}" alt="{{ recent_chat.title }}" width="24" height="24" style="border-radius: 4px; margin-right: 10px;">
+                <p>{{ recent_chat.title }}</p>
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="user-section">
+            <div class="user-avatar">{{ user_name[0] }}</div>
+            <div class="user-info">
+                <div class="user-name">{{ user_name }}</div>
+                <div class="user-email">{{ user_email }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-nav">
+            <div class="nav-title">{{ chat.title }}</div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area" id="chat-area">
+            <div id="chat-messages" class="chat-messages">
+                {% for message in messages %}
+                <div class="chat-message {% if message.sender == 'user' %}user-message{% endif %}">
+                    <div class="message-avatar {{ 'user-message-avatar' if message.sender == 'user' else 'bot-avatar' }}">
+                        {% if message.sender == 'bot' %}
+                        <img src="{{ url_for('static', filename='img/white_logo.png') }}" width="24" height="24">
+                        {% else %}{{ user_name[0] }}{% endif %}
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <div class="message-sender">{{ 'You' if message.sender == 'user' else 'GoGoPrint AI' }}</div>
+                            <div class="message-time">{{ message.timestamp.strftime('%I:%M %p') }}</div>
+                        </div>
+                        <div class="message-text">
+                            <p>{{ message.content }}</p>
+                        </div>
+                        {% if message.model_preview and message.model_name %}
+                        <div class="model-preview">
+                            <img src="{{ url_for('static', filename='img/' ~ message.model_name.replace('.stl', '.png')) }}" alt="3D Model Preview">
+                            <div class="model-controls">
+                                <div class="model-info">{{ message.model_name }} ({{ message.model_size }})</div>
+                                <div class="model-actions">
+                                    <button class="model-btn download-btn">Download</button>
+                                    <div class="download-options">
+                                        <button class="format-btn" data-format="png">PNG</button>
+                                        <button class="format-btn" data-format="3mf">3MF</button>
+                                        <button class="format-btn" data-format="stl">STL</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="message-area">
+            <div class="message-container">
+                <div class="message-input">
+                    <textarea id="message-input" placeholder="Type your message..."></textarea>
+                    <div class="message-actions">
+                        <button class="action-btn">+</button>
+                    </div>
+                </div>
+                <button class="send-btn" id="send-btn" disabled>→</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

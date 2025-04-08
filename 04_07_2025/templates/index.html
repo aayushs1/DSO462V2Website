@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GoGoPrint - 3D Model AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/white_logo.png') }}">
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/white_logo.png') }}" alt="GoGoPrint Logo" width="40" height="40">
+            <div class="logo-text">GoGoPrint</div>
+        </div>
+
+        <button class="new-chat-btn" id="new-chat-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            New Chat
+        </button>
+
+        <div class="history">
+            <h3 class="history-title">Recent Chats</h3>
+            {% for chat in recent_chats %}
+            <a href="{{ url_for('view_chat', chat_id=chat._id) }}" class="chat-history-item">
+                <img src="{{ url_for('static', filename='img/' ~ chat.image) }}" alt="{{ chat.title }}" width="24" height="24" style="border-radius: 4px; margin-right: 10px;">
+                <p>{{ chat.title }}</p>
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="user-section">
+            <div class="user-avatar">{{ user_name[0] }}</div>
+            <div class="user-info">
+                <div class="user-name">{{ user_name }}</div>
+                <div class="user-email">{{ user_email }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-nav">
+            <div class="nav-title">3D Model AI Assistant</div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <div class="welcome-container" id="welcome-container">
+                <div class="welcome-header">
+                    <h1>3D Printing & Modeling, Simplified</h1>
+                    <p>Hi, {{ user_name }}! Describe the 3D model you need, and our AI will generate it for you.</p>
+                </div>
+            </div>
+            <div id="chat-messages" class="chat-messages"></div>
+        </div>
+
+        <div class="message-area">
+            <div class="message-container">
+                <div class="message-input">
+                    <textarea id="message-input" placeholder="Describe the 3D model you need..."></textarea>
+                    <div class="message-actions">
+                        <button class="action-btn">+</button>
+                    </div>
+                </div>
+                <button class="send-btn" id="send-btn" disabled>→</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
