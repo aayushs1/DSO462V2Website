@@ -451,6 +451,7 @@ body {
     box-shadow: var(--shadow);
     font-size: 24px;
     font-weight: bold;
+    /* No margin needed when using align-items: center */
 }
 
 .send-btn:disabled {
