@@ -27,28 +27,40 @@
             <img src="{{ url_for('static', filename='img/white_logo.png') }}" alt="GoGoPrint Logo" width="40" height="40">
             <div class="logo-text">GoGoPrint</div>
         </div>
-
+    
         <a href="{{ url_for('index') }}" class="new-chat-btn">
             <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             New Chat
         </a>
-
+    
         <div class="history">
             <h3 class="history-title">Recent Chats</h3>
-            {% for recent_chat in recent_chats %}
-            <a href="{{ url_for('view_chat', chat_id=recent_chat._id) }}" class="chat-history-item {% if recent_chat._id == chat._id %}active{% endif %}">
-                <img src="{{ url_for('static', filename='img/' ~ recent_chat.image) }}" alt="{{ recent_chat.title }}" width="24" height="24" style="border-radius: 4px; margin-right: 10px;">
-                <p>{{ recent_chat.title }}</p>
-            </a>
-            {% endfor %}
+            {% if recent_chats %}
+                {% for recent_chat in recent_chats %}
+                <a href="{{ url_for('view_chat', chat_id=recent_chat._id) }}" class="chat-history-item {% if chat and recent_chat._id == chat._id %}active{% endif %}">
+                    <img src="{{ url_for('static', filename='img/' ~ recent_chat.image) }}" alt="{{ recent_chat.title }}" width="24" height="24" style="border-radius: 4px; margin-right: 10px;">
+                    <p>{{ recent_chat.title }}</p>
+                </a>
+                {% endfor %}
+            {% else %}
+                <p class="no-chats-message">No recent chats</p>
+            {% endif %}
         </div>
-
+    
         <div class="user-section">
             <div class="user-avatar">{{ user_name[0] }}</div>
             <div class="user-info">
                 <div class="user-name">{{ user_name }}</div>
                 <div class="user-email">{{ user_email }}</div>
             </div>
+            <a href="{{ url_for('logout') }}" class="logout-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Logout</span>
+            </a>
         </div>
     </div>
 

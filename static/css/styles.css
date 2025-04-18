@@ -137,12 +137,64 @@ body {
     pointer-events: none; /* Makes sure clicks go through to the parent element */
 }
 
+
+.user-name {
+    font-size: 14px;
+    color: white;
+}
+
+.user-email {
+    font-size: 12px;
+    color: #aaaaaa;
+}
+
+@media (max-width: 768px) {
+    .user-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .logout-btn {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}
+.logout-btn {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 10px;
+    text-decoration: none;
+}
+
+.logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.logout-btn svg {
+    margin-right: 8px;
+}
+
+.logout-btn span {
+    font-size: 14px;
+    color: white;
+}
+
 .user-section {
     margin-top: auto;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     padding-top: 15px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .user-avatar {
@@ -155,21 +207,22 @@ body {
     justify-content: center;
     color: white;
     margin-right: 10px;
+    flex-shrink: 0;
 }
 
 .user-info {
     flex: 1;
+    min-width: 0;
 }
 
-.user-name {
-    font-size: 14px;
-    color: white;
-}
-
-.user-email {
-    font-size: 12px;
+.no-chats-message {
     color: #aaaaaa;
+    font-size: 14px;
+    padding: 10px;
+    text-align: center;
+    font-style: italic;
 }
+
 
 /* Main Content */
 .main-content {
@@ -712,10 +765,6 @@ button:hover:not(:disabled) {
 
     .history {
         display: none;
-    }
-
-    .user-section {
-        margin-top: 15px;
     }
 
     .example-queries {

@@ -12,6 +12,44 @@ let currentChatId = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if user is logged in
+    const userSection = document.querySelector('.user-section');
+    const isLoggedIn = userSection && userSection.querySelector('.user-name') && 
+                       userSection.querySelector('.user-name').textContent.trim() !== '';
+    
+    // If not logged in, show login message and disable chat functionality
+    if (!isLoggedIn && welcomeContainer) {
+        // Replace welcome container with login message
+        welcomeContainer.innerHTML = `
+            <div class="welcome-header">
+                <h1>Please Log In</h1>
+                <p>You need to log in to use GoGoPrint and access your 3D models.</p>
+                <a href="/login" class="login-btn">Log In</a>
+                <p class="signup-text">Don't have an account? <a href="/signup">Sign Up</a></p>
+            </div>
+        `;
+        
+        // Disable message input
+        if (messageInput) {
+            messageInput.disabled = true;
+            messageInput.placeholder = "Please log in to chat...";
+        }
+        
+        // Disable send button
+        if (sendBtn) {
+            sendBtn.disabled = true;
+        }
+        
+        // Hide the chat history in sidebar if visible
+        const historySection = document.querySelector('.history');
+        if (historySection) {
+            historySection.style.display = 'none';
+        }
+        
+        // Early return to prevent other event listeners from being added
+        return;
+    }
+
     // Enable/disable send button based on input
     messageInput.addEventListener('input', () => {
         sendBtn.disabled = messageInput.value.trim() === '';
@@ -86,6 +124,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Function to handle model download
 function downloadModel(modelName, format) {
+    // Check if user is logged in before allowing download
+    const userSection = document.querySelector('.user-section');
+    const isLoggedIn = userSection && userSection.querySelector('.user-name') && 
+                       userSection.querySelector('.user-name').textContent.trim() !== '';
+    
+    if (!isLoggedIn) {
+        alert('Please log in to download models');
+        window.location.href = '/login';
+        return;
+    }
+    
     // In a real implementation, this would trigger the actual download
     // For now, we'll just log it
     console.log(`Downloading ${modelName} in ${format.toUpperCase()} format`);
@@ -94,9 +143,16 @@ function downloadModel(modelName, format) {
     // window.location.href = `/download/${modelName}?format=${format}`;
 
     // Or using fetch:
-    /*
     fetch(`/download/${modelName}?format=${format}`)
-        .then(response => response.blob())
+        .then(response => {
+            if (response.status === 401) {
+                // User is not authenticated
+                alert('Please log in to download models');
+                window.location.href = '/login';
+                throw new Error('User not authenticated');
+            }
+            return response.blob();
+        })
         .then(blob => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -107,11 +163,12 @@ function downloadModel(modelName, format) {
             a.click();
             window.URL.revokeObjectURL(url);
         })
-        .catch(error => console.error('Error downloading file:', error));
-    */
-
-    // For this demo, we'll show an alert
-    alert(`Download started: ${modelName}.${format}`);
+        .catch(error => {
+            if (error.message !== 'User not authenticated') {
+                console.error('Error downloading file:', error);
+                alert(`Error downloading model. Please try again later.`);
+            }
+        });
 }
 
 // Create a new chat
@@ -122,7 +179,14 @@ function createNewChat() {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.status === 401) {
+            // User is not authenticated
+            window.location.href = '/login';
+            throw new Error('User not authenticated');
+        }
+        return response.json();
+    })
     .then(data => {
         currentChatId = data.chat_id;
 
@@ -177,7 +241,15 @@ function sendMessageToServer(message) {
             message: message
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.status === 401) {
+            // User is not authenticated
+            removeTypingIndicator();
+            window.location.href = '/login';
+            throw new Error('User not authenticated');
+        }
+        return response.json();
+    })
     .then(data => {
         // Remove typing indicator
         removeTypingIndicator();
@@ -189,7 +261,10 @@ function sendMessageToServer(message) {
     .catch(error => {
         console.error('Error sending message:', error);
         removeTypingIndicator();
-        addMessage('bot', 'Sorry, there was an error processing your request. Please try again.', null);
+        // Only show error message if not redirecting due to auth error
+        if (error.message !== 'User not authenticated') {
+            addMessage('bot', 'Sorry, there was an error processing your request. Please try again.', null);
+        }
     });
 }
 
@@ -198,12 +273,15 @@ function addMessage(sender, content, botData = null) {
     const messageElement = document.createElement('div');
     messageElement.className = `chat-message ${sender === 'user' ? 'user-message' : ''}`;
 
+    // Get user's initial for the avatar
+    const userInitial = getUserInitial();
+    
     let avatarHtml;
     let senderName;
     let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     if (sender === 'user') {
-        avatarHtml = `<div class="message-avatar user-message-avatar">P</div>`;
+        avatarHtml = `<div class="message-avatar user-message-avatar">${userInitial}</div>`;
         senderName = 'You';
     } else {
         avatarHtml = `
@@ -252,6 +330,16 @@ function addMessage(sender, content, botData = null) {
 
     // Scroll to the bottom
     chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+// Get user's initial for avatar
+function getUserInitial() {
+    const userSection = document.querySelector('.user-section');
+    if (userSection && userSection.querySelector('.user-name')) {
+        const userName = userSection.querySelector('.user-name').textContent.trim();
+        return userName.charAt(0).toUpperCase();
+    }
+    return 'U'; // Default if no user name found
 }
 
 // Show typing indicator
