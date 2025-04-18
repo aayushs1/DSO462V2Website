@@ -96,44 +96,99 @@ def load_curated_chat_data():
 
 @app.route('/')
 def index():
-    session['user_id'] = 'philbert_loekman'
-    session['user_name'] = "Philbert Loekman"
-    session['user_email'] = "philbert@loekman.com"
+    # Check if user is logged in
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # Get user information
+    user_id = session['user_id']
+    user_name = session.get('user_name', 'User')
+    user_email = session.get('user_email', '')
+    
+    # Get only the chats belonging to this user
+    recent_chats = db.chats.find({'user_id': user_id}).sort('last_updated', -1).limit(10)
+    
+    return render_template('index.html', 
+                           user_name=user_name,
+                           user_email=user_email,
+                           recent_chats=list(recent_chats))
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        # Find the user in the database
+        user = db.users.find_one({'email': email})
+        
+        if user and check_password_hash(user['password'], password):
+            # Set session variables
+            session['user_id'] = str(user['_id'])
+            session['user_name'] = user['name']
+            session['user_email'] = user['email']
+            
+            flash('Login successful!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid email or password', 'error')
+    
+    return render_template('login.html')
 
-    recent_chats = mock_db['chats'][:5]
-    return render_template('index.html', recent_chats=recent_chats, user_name=session.get('user_name'), user_email=session.get('user_email'))
+@app.route('/logout')
+def logout():
+    # Clear all session data
+    session.clear()
+    # Redirect to login page or home page
+    flash('You have been logged out successfully', 'success')
+    return redirect(url_for('login'))  # Replace 'login' with your login route name
 
 @app.route('/chat/<chat_id>')
 def view_chat(chat_id):
+    # Check if user is logged in
     if 'user_id' not in session:
-        session['user_id'] = 'philbert_loekman'
-        session['user_name'] = "Philbert Loekman"
-        session['user_email'] = "philbert@loekman.com"
-
-    chat = next((c for c in mock_db['chats'] if c['id'] == chat_id), None)
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
+    user_name = session.get('user_name', 'User')
+    user_email = session.get('user_email', '')
+    
+    # Get the chat and verify it belongs to this user
+    chat = db.chats.find_one({'_id': ObjectId(chat_id), 'user_id': user_id})
     if not chat:
-        return "Chat not found", 404
+        flash('Chat not found or you do not have permission to view it', 'error')
+        return redirect(url_for('index'))
+    
+    # Get the messages for this chat
+    messages = db.messages.find({'chat_id': ObjectId(chat_id)}).sort('timestamp', 1)
+    
+    # Get recent chats for the sidebar
+    recent_chats = db.chats.find({'user_id': user_id}).sort('last_updated', -1).limit(10)
+    
+    return render_template('chat.html',
+                           chat=chat,
+                           messages=list(messages),
+                           user_name=user_name,
+                           user_email=user_email,
+                           recent_chats=list(recent_chats))
 
-    messages = [msg for msg in mock_db['messages'] if msg.get('chat_id') == chat_id]
-    messages.sort(key=lambda x: x.get('timestamp'))
-    recent_chats = mock_db['chats'][:5]
-
-    return render_template('chat.html', chat=chat, messages=messages, recent_chats=recent_chats, user_name=session.get('user_name'), user_email=session.get('user_email'))
-
-@app.route('/chat/new', methods=['POST'])
+@app.route('/new_chat', methods=['POST'])
 def new_chat():
-    user_id = session.get('user_id', 'philbert_loekman')
-    chat_id = str(uuid.uuid4())
-    new_chat = {
-        'id': chat_id,
-        '_id': chat_id,
-        'title': 'New Chat',
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'User not authenticated'}), 401
+    
+    user_id = session['user_id']
+    title = request.json.get('title', 'New Chat')
+    
+    # Create a new chat document with user_id
+    chat_id = db.chats.insert_one({
+        'title': title,
         'user_id': user_id,
-        'created_at': datetime.now(),
-        'last_updated': datetime.now()
-    }
-    mock_db['chats'].insert(0, new_chat)
-    return jsonify({'chat_id': chat_id})
+        'created_at': datetime.datetime.now(),
+        'last_updated': datetime.datetime.now(),
+        'image': 'default_chat.png'  # Default image or whatever you use
+    }).inserted_id
+    
+    return jsonify({'success': True, 'chat_id': str(chat_id)})
 
 @app.route('/message/send', methods=['POST'])
 def send_message():
