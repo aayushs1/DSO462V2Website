@@ -1,0 +1,170 @@
+/* GoGoPrint Authentication Pages CSS (login and register) */
+:root {
+    --dark-bg: #1a1a1a;
+    --container-bg: #222222;
+    --text-color: #ffffff;
+    --input-bg: #333333;
+    --placeholder-color: #999999;
+    --accent-color: #f4a742;
+    --success-color: #55aa55;
+    --error-color: #ff5555;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+    font-family: 'Questrial', sans-serif;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+  
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .login-box {
+    background-color: var(--container-bg);
+    border-radius: 12px;
+    box-shadow: var(--box-shadow);
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .logo-container img {
+    margin-right: 12px;
+  }
+  
+  .logo-container h1 {
+    font-size: 28px;
+    font-weight: normal;
+    margin: 0;
+  }
+  
+  h2 {
+    font-size: 22px;
+    font-weight: normal;
+    margin-bottom: 30px;
+    color: var(--text-color);
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text-color);
+    opacity: 0.8;
+  }
+  
+  input {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+  
+  input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-color);
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+  
+  .btn:hover {
+    background-color: #e09236;
+  }
+  
+  .auth-footer {
+    margin-top: 25px;
+    font-size: 14px;
+  }
+  
+  .auth-footer a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .auth-footer a:hover {
+    text-decoration: underline;
+  }
+  
+  .alert {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    font-size: 14px;
+    text-align: left;
+  }
+  
+  .alert-success {
+    background-color: rgba(85, 170, 85, 0.2);
+    border: 1px solid var(--success-color);
+    color: var(--success-color);
+  }
+  
+  .alert-danger {
+    background-color: rgba(255, 85, 85, 0.2);
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+  }
+  
+  /* Success message styling like the one shown in the screenshot */
+  .alert-success {
+    background-color: rgba(85, 170, 85, 0.2);
+    border: 1px solid #2e582e;
+    color: #55aa55;
+    text-align: center;
+  }
+  
+  /* Media queries for responsiveness */
+  @media (max-width: 480px) {
+    .login-box {
+      padding: 30px 20px;
+      margin: 0 15px;
+    }
+  }
