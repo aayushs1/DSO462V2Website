@@ -102,13 +102,19 @@ def load_curated_chat_data():
                 chat_info['image_filename']
             )
 
+# Add this new route for the home page
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+# Modify the existing index route
 @app.route('/')
 def index():
     # Check if user is logged in
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))  # Redirect to home page instead of login
     
-    # Get user information
+    # User is logged in, show chat interface
     user_id = session['user_id']
     user_name = session.get('user_name', 'User')
     user_email = session.get('user_email', '')
@@ -117,10 +123,11 @@ def index():
     recent_chats = list(db.chats.find({'user_id': user_id}).sort('last_updated', -1).limit(10))
     
     return render_template('index.html', 
-                           user_name=user_name,
-                           user_email=user_email,
-                           recent_chats=recent_chats)
+                          user_name=user_name,
+                          user_email=user_email,
+                          recent_chats=recent_chats)
 
+# Update the login route to redirect to index after successful login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -137,7 +144,7 @@ def login():
             session['user_email'] = user['email']
             
             flash('Login successful!', 'success')
-            return redirect(url_for('index'))
+            return redirect(url_for('index'))  # Already going to index
         else:
             flash('Invalid email or password', 'error')
     
