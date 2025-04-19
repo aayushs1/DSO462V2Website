@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3133111739771612"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GoGoPrint - 3D Printing & Modeling, Simplified</title>
+    <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/white_logo.png') }}">
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HW0LJ3EF2K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HW0LJ3EF2K');
+</script>
+<body>
+    <header>
+        <nav class="main-nav">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='img/white_logo.png') }}" alt="GoGoPrint Logo" width="40" height="40">
+                <h1>GoGoPrint</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#services">Services</a>
+                <a href="#plans">Plans</a>
+                <a href="#testimonials">Testimonials</a>
+                <a href="{{ url_for('login') }}" class="auth-link">Login</a>
+                <a href="{{ url_for('register') }}" class="auth-link highlight">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>3D Printing & Modeling, Simplified</h1>
+            <p>Turn your ideas into reality with our AI-powered 3D modeling assistant.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About GoGoPrint</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Our Mission</h3>
+                    <p>GoGoPrint is a cutting-edge 3D printing software platform that caters to tech hobbyists seeking advanced tools and features. With a unique two-tier system, basic and premium, we empower users to leverage AI for generating CAD files compatible with various 3D printers. Our mission is to simplify the 3D printing process and inspire creativity in every project.</p>
+                    <a href="#" class="btn btn-secondary">Learn More</a>
+                </div>
+                <div class="about-image">
+                    <img src="{{ url_for('static', filename='img/filament.jpg') }}" alt="3D Printing Filament">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="container">
+            <h2>Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-number">1</div>
+                    <h3>AI-Powered CAD Model Generation</h3>
+                    <p>Turn your ideas into reality with ease. Simply chat with our AI, and we'll generate a custom CAD model tailored to your needs. Whether you use a Bambu printer or any other service, our software ensures compatibility. We automatically optimize your file, perform printability checks, and streamline the process—so you can focus on creating without the hassle.</p>
+                    <a href="#" class="btn btn-dark">More Info</a>
+                </div>
+                <div class="service-card">
+                    <div class="service-number">2</div>
+                    <h3>Expert 3D Printing Consulting</h3>
+                    <p>We're here to make 3D printing effortless. Our dedicated team provides personalized support, helping you refine your AI-generated designs and troubleshoot any issues. Whether you're a beginner or an expert, we ensure your printing experience is smooth, efficient, and stress-free.</p>
+                    <a href="#" class="btn btn-dark">More Info</a>
+                </div>
+                <div class="service-card">
+                    <div class="service-number">3</div>
+                    <h3>Hassle-Free 3D Printing</h3>
+                    <p>Our comprehensive platform handles everything from model creation to final output. With intuitive tools and step-by-step guidance, we remove complexity from the 3D printing workflow. Focus on your creative vision while we take care of the technical details.</p>
+                    <a href="#" class="btn btn-dark">More Info</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="plans" class="subscription">
+        <div class="container">
+            <h2>Subscription Plans</h2>
+            <div class="plan-grid">
+                <div class="plan-card">
+                    <h3>Basic</h3>
+                    <p class="plan-subtitle">Start Your 3D Printing Journey</p>
+                    <p class="plan-price">$25</p>
+                    <ul class="plan-features">
+                        <li>AI model generation (basic complexity)</li>
+                        <li>Standard file formats</li>
+                        <li>Email support</li>
+                        <li>Basic tutorials</li>
+                    </ul>
+                    <a href="{{ url_for('register') }}" class="btn btn-secondary">Get Started</a>
+                </div>
+                <div class="plan-card featured">
+                    <h3>Premium</h3>
+                    <p class="plan-subtitle">Maximize Our 3D Model</p>
+                    <p class="plan-price">$40</p>
+                    <ul class="plan-features">
+                        <li>Advanced AI model generation</li>
+                        <li>All file formats supported</li>
+                        <li>Priority email & chat support</li>
+                        <li>Advanced tutorials & guides</li>
+                        <li>Custom parameter adjustments</li>
+                    </ul>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+                </div>
+                <div class="plan-card">
+                    <h3>Corporate</h3>
+                    <p class="plan-subtitle">Master CAD Design with AI</p>
+                    <p class="plan-price">$100</p>
+                    <ul class="plan-features">
+                        <li>Enterprise-grade model generation</li>
+                        <li>Team collaboration features</li>
+                        <li>Priority support with dedicated agent</li>
+                        <li>Custom API access</li>
+                        <li>Bulk processing</li>
+                    </ul>
+                    <a href="{{ url_for('register') }}" class="btn btn-secondary">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <h2>Testimonials</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial">
+                    <p class="testimonial-text">Using GoGoPrint has transformed my hobby into a professional venture. The AI tools are incredibly efficient and have elevated the quality of my prints.</p>
+                    <p class="testimonial-author">Sara Thompson</p>
+                </div>
+                <div class="testimonial">
+                    <p class="testimonial-text">The basic tier of GoGoPrint is perfect for beginners like me. It's user-friendly and has helped me kickstart my 3D printing journey.</p>
+                    <p class="testimonial-author">John Rodriguez</p>
+                </div>
+                <div class="testimonial">
+                    <p class="testimonial-text">As a premium user, I'm amazed by the precision and accuracy GoGoPrint offers. It's truly a game-changer in the 3D printing industry.</p>
+                    <p class="testimonial-author">Aisha Patel</p>
+                </div>
+                <div class="testimonial">
+                    <p class="testimonial-text">GoGoPrint's AI features have saved me countless hours in designing CAD files. It's a must-have tool for any serious 3D printing enthusiast.</p>
+                    <p class="testimonial-author">David Kim</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Get to Know Us</h2>
+            <p>Ready to revolutionize your 3D printing experience with AI-powered tools?</p>
+            <a href="{{ url_for('register') }}" class="btn btn-primary">Join GoGoPrint Today</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="{{ url_for('static', filename='img/white_logo.png') }}" alt="GoGoPrint Logo" width="40" height="40">
+                    <h3>GoGoPrint</h3>
+                    <p>3D Printing & Modeling, Simplified</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <a href="#">About Us</a>
+                        <a href="#">Our Team</a>
+                        <a href="#">Careers</a>
+                        <a href="#">Contact</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <a href="#">Blog</a>
+                        <a href="#">Tutorials</a>
+                        <a href="#">Support</a>
+                        <a href="#">Documentation</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 GoGoPrint. All rights reserved.</p>
+                <div class="footer-social">
+                    <a href="#">Twitter</a>
+                    <a href="#">Facebook</a>
+                    <a href="#">Instagram</a>
+                    <a href="#">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="chat-widget">
+        <a href="{{ url_for('login') }}" class="chat-button">
+            <span class="chat-icon">💬</span>
+            <span>Chat with AI</span>
+        </a>
+    </div>
+</body>
+</html>
