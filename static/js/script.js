@@ -179,7 +179,7 @@ function downloadModel(modelName, format) {
 // Create a new chat
 function createNewChat() {
     // Return a promise that resolves with the chat ID
-    return fetch('/chat/new', {
+    return fetch('/new_chat', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
