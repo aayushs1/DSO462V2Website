@@ -120,6 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
             e.target.classList.add('active');
         }
     });
+    
+    // Check if we're in an existing chat by looking at the URL
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length > 2 && pathParts[1] === 'chat') {
+        currentChatId = pathParts[2]; // Set the current chat ID
+    }
 });
 
 // Function to handle model download
@@ -136,7 +142,6 @@ function downloadModel(modelName, format) {
     }
     
     // In a real implementation, this would trigger the actual download
-    // For now, we'll just log it
     console.log(`Downloading ${modelName} in ${format.toUpperCase()} format`);
 
     // You could implement an actual download here with:
@@ -173,7 +178,8 @@ function downloadModel(modelName, format) {
 
 // Create a new chat
 function createNewChat() {
-    fetch('/chat/new', {
+    // Return a promise that resolves with the chat ID
+    return fetch('/chat/new', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -197,25 +203,87 @@ function createNewChat() {
 
         // Clear any existing messages
         chatMessages.innerHTML = '';
+        
+        return currentChatId;
     })
     .catch(error => {
         console.error('Error creating new chat:', error);
+        throw error; // Rethrow to handle it in the calling function
     });
 }
 
 // Send message
-function sendMessage() {
+async function sendMessage() {
     const message = messageInput.value.trim();
     if (!message) return;
 
-    // Create chat if doesn't exist yet
-    if (!currentChatId) {
-        createNewChat().then(() => {
-            sendMessageToServer(message);
-        });
-    } else {
-        sendMessageToServer(message);
+    try {
+        // Create chat if doesn't exist yet
+        if (!currentChatId) {
+            await createNewChat();
+        }
+        
+        // Now send the message
+        await sendMessageToServer(message);
+        
+        // Update sidebar with new chat if needed (without refreshing the page)
+        if (!document.querySelector(`.chat-history-item[data-chat-id="${currentChatId}"]`)) {
+            updateChatHistory();
+        }
+    } catch (error) {
+        console.error('Error in send message flow:', error);
     }
+}
+
+// Update chat history in sidebar
+function updateChatHistory() {
+    fetch('/get_chat_history')
+        .then(response => response.json())
+        .then(data => {
+            const historySection = document.querySelector('.history');
+            if (historySection && data.recent_chats && data.recent_chats.length > 0) {
+                // Remove "no chats" message if it exists
+                const noChatsMsg = historySection.querySelector('.no-chats-message');
+                if (noChatsMsg) {
+                    noChatsMsg.remove();
+                }
+                
+                // Clear existing history items and rebuild
+                const existingItems = historySection.querySelectorAll('.chat-history-item');
+                existingItems.forEach(item => item.remove());
+                
+                // Add history title if it doesn't exist
+                if (!historySection.querySelector('.history-title')) {
+                    const titleElem = document.createElement('h3');
+                    titleElem.className = 'history-title';
+                    titleElem.textContent = 'Recent Chats';
+                    historySection.appendChild(titleElem);
+                }
+                
+                // Add new history items
+                data.recent_chats.forEach(chat => {
+                    const chatItem = document.createElement('a');
+                    chatItem.className = `chat-history-item ${chat._id === currentChatId ? 'active' : ''}`;
+                    chatItem.href = `/chat/${chat._id}`;
+                    chatItem.dataset.chatId = chat._id;
+                    
+                    chatItem.innerHTML = `
+                        <img src="/static/img/${chat.image}" alt="${chat.title}" width="24" height="24" style="border-radius: 4px; margin-right: 10px;">
+                        <p>${chat.title}</p>
+                    `;
+                    
+                    chatItem.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = chatItem.href;
+                    });
+                    
+                    historySection.appendChild(chatItem);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error updating chat history:', error);
+        });
 }
 
 // Send message to server
@@ -231,7 +299,7 @@ function sendMessageToServer(message) {
     showTypingIndicator();
 
     // Send to server
-    fetch('/message/send', {
+    return fetch('/message/send', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -257,6 +325,17 @@ function sendMessageToServer(message) {
         // Process bot response
         const botResponse = data.bot_response;
         addMessage('bot', botResponse.content, botResponse);
+        
+        // Update the page title with the chat title if provided
+        if (data.chat_title) {
+            document.title = `${data.chat_title} - GoGoPrint`;
+            
+            // Also update the nav title if it exists
+            const navTitle = document.querySelector('.nav-title');
+            if (navTitle) {
+                navTitle.textContent = data.chat_title;
+            }
+        }
     })
     .catch(error => {
         console.error('Error sending message:', error);
