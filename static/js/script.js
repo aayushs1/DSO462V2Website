@@ -6,9 +6,26 @@ const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendBtn = document.getElementById('send-btn');
 const exampleQueries = document.querySelectorAll('.example-query');
+const loadingIcon = document.getElementById('loading-icon');
+const loadingOverlay = document.getElementById('loading-overlay');
 
 // Variables
 let currentChatId = null;
+
+// Loading state functions
+function showLoading() {
+    loadingIcon.classList.add('show');
+    loadingOverlay.classList.add('show');
+    sendBtn.disabled = true;
+    messageInput.disabled = true;
+}
+
+function hideLoading() {
+    loadingIcon.classList.remove('show');
+    loadingOverlay.classList.remove('show');
+    sendBtn.disabled = false;
+    messageInput.disabled = false;
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -110,8 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const format = e.target.dataset.format;
             const modelName = e.target.closest('.model-controls').querySelector('.model-info').textContent.split(' ')[0];
 
-            // Simulate download of the selected format
-            downloadModel(modelName, format);
+            // Always download PNG regardless of format button clicked
+            downloadModel(modelName, 'png');
 
             // Visual feedback - add active class
             document.querySelectorAll('.format-btn').forEach(btn => {
@@ -130,34 +147,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Function to handle model download
 function downloadModel(modelName, format) {
-    // Check if user is logged in before allowing download
-    const userSection = document.querySelector('.user-section');
-    const isLoggedIn = userSection && userSection.querySelector('.user-name') && 
-                       userSection.querySelector('.user-name').textContent.trim() !== '';
-    
-    if (!isLoggedIn) {
-        alert('Please log in to download models');
-        window.location.href = '/login';
-        return;
-    }
-    
     // In a real implementation, this would trigger the actual download
+    // For now, we'll just log it
     console.log(`Downloading ${modelName} in ${format.toUpperCase()} format`);
 
     // You could implement an actual download here with:
     // window.location.href = `/download/${modelName}?format=${format}`;
 
     // Or using fetch:
+    /*
     fetch(`/download/${modelName}?format=${format}`)
-        .then(response => {
-            if (response.status === 401) {
-                // User is not authenticated
-                alert('Please log in to download models');
-                window.location.href = '/login';
-                throw new Error('User not authenticated');
-            }
-            return response.blob();
-        })
+        .then(response => response.blob())
         .then(blob => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -168,16 +168,16 @@ function downloadModel(modelName, format) {
             a.click();
             window.URL.revokeObjectURL(url);
         })
-        .catch(error => {
-            if (error.message !== 'User not authenticated') {
-                console.error('Error downloading file:', error);
-                alert(`Error downloading model. Please try again later.`);
-            }
-        });
+        .catch(error => console.error('Error downloading file:', error));
+    */
+
+    // For this demo, we'll show an alert
+    alert(`Download started: ${modelName}.png`);
 }
 
 // Create a new chat
 function createNewChat() {
+    showLoading();
     // Return a promise that resolves with the chat ID
     return fetch('/new_chat', {
         method: 'POST',
@@ -195,43 +195,77 @@ function createNewChat() {
     })
     .then(data => {
         currentChatId = data.chat_id;
+        hideLoading();
 
         // Hide welcome container and show empty chat
         if (welcomeContainer) {
             welcomeContainer.style.display = 'none';
         }
-
-        // Clear any existing messages
-        chatMessages.innerHTML = '';
+        if (chatArea) {
+            chatArea.style.display = 'block';
+        }
         
-        return currentChatId;
+        // Redirect to the new chat
+        window.location.href = `/chat/${currentChatId}`;
     })
     .catch(error => {
+        hideLoading();
         console.error('Error creating new chat:', error);
-        throw error; // Rethrow to handle it in the calling function
+        alert('Error creating new chat. Please try again.');
     });
 }
 
-// Send message
+// Send message function
 async function sendMessage() {
+    if (!messageInput.value.trim() || !currentChatId) return;
+    
     const message = messageInput.value.trim();
-    if (!message) return;
-
+    messageInput.value = '';
+    sendBtn.disabled = true;
+    
+    // Add user message to chat
+    addMessage('user', message);
+    
+    // Show loading state
+    showLoading();
+    
     try {
-        // Create chat if doesn't exist yet
-        if (!currentChatId) {
-            await createNewChat();
+        const response = await fetch('/chat/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: message,
+                chat_id: currentChatId
+            })
+        });
+        
+        if (response.status === 401) {
+            window.location.href = '/login';
+            throw new Error('User not authenticated');
         }
         
-        // Now send the message
-        await sendMessageToServer(message);
+        const data = await response.json();
         
-        // Update sidebar with new chat if needed (without refreshing the page)
-        if (!document.querySelector(`.chat-history-item[data-chat-id="${currentChatId}"]`)) {
+        if (data.success) {
+            // Add bot response to chat
+            addMessage('bot', data.response, {
+                hasImage: data.has_image,
+                imageFilename: data.image_filename,
+                fileFormat: data.file_format
+            });
+            
+            // Update chat history
             updateChatHistory();
+        } else {
+            throw new Error(data.error || 'Error sending message');
         }
     } catch (error) {
-        console.error('Error in send message flow:', error);
+        console.error('Error:', error);
+        alert('Error sending message. Please try again.');
+    } finally {
+        hideLoading();
     }
 }
 
@@ -286,81 +320,17 @@ function updateChatHistory() {
         });
 }
 
-// Send message to server
-function sendMessageToServer(message) {
-    // Add user message to UI
-    addMessage('user', message);
-
-    // Clear input
-    messageInput.value = '';
-    sendBtn.disabled = true;
-
-    // Show typing indicator
-    showTypingIndicator();
-
-    // Send to server
-    return fetch('/message/send', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            chat_id: currentChatId,
-            message: message
-        })
-    })
-    .then(response => {
-        if (response.status === 401) {
-            // User is not authenticated
-            removeTypingIndicator();
-            window.location.href = '/login';
-            throw new Error('User not authenticated');
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Remove typing indicator
-        removeTypingIndicator();
-
-        // Process bot response
-        const botResponse = data.bot_response;
-        addMessage('bot', botResponse.content, botResponse);
-        
-        // Update the page title with the chat title if provided
-        if (data.chat_title) {
-            document.title = `${data.chat_title} - GoGoPrint`;
-            
-            // Also update the nav title if it exists
-            const navTitle = document.querySelector('.nav-title');
-            if (navTitle) {
-                navTitle.textContent = data.chat_title;
-            }
-        }
-    })
-    .catch(error => {
-        console.error('Error sending message:', error);
-        removeTypingIndicator();
-        // Only show error message if not redirecting due to auth error
-        if (error.message !== 'User not authenticated') {
-            addMessage('bot', 'Sorry, there was an error processing your request. Please try again.', null);
-        }
-    });
-}
-
 // Add message to UI
 function addMessage(sender, content, botData = null) {
     const messageElement = document.createElement('div');
     messageElement.className = `chat-message ${sender === 'user' ? 'user-message' : ''}`;
 
-    // Get user's initial for the avatar
-    const userInitial = getUserInitial();
-    
     let avatarHtml;
     let senderName;
     let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     if (sender === 'user') {
-        avatarHtml = `<div class="message-avatar user-message-avatar">${userInitial}</div>`;
+        avatarHtml = `<div class="message-avatar user-message-avatar">${getUserInitial()}</div>`;
         senderName = 'You';
     } else {
         avatarHtml = `

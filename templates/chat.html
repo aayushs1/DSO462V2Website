@@ -125,6 +125,254 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<!-- Loading Icon -->
+<div class="loading-overlay" id="loading-overlay">
+    <div class="loading-icon">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Generating image...</div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-btn');
+    const chatArea = document.getElementById('chat-area');
+    const chatMessages = document.getElementById('chat-messages');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    
+    console.log('Chat interface initialized');
+    
+    // Enable/disable send button based on input
+    messageInput.addEventListener('input', function() {
+        sendButton.disabled = !this.value.trim();
+        console.log('Send button state:', !this.value.trim() ? 'disabled' : 'enabled');
+    });
+    
+    // Function to append a message to the chat
+    function appendMessage(message, isUser) {
+        console.log('Appending message:', message, 'isUser:', isUser);
+        const messageHtml = `
+            <div class="chat-message ${isUser ? 'user-message' : ''}">
+                <div class="message-avatar ${isUser ? 'user-message-avatar' : 'bot-avatar'}">
+                    ${isUser ? '{{ user_name[0] }}' : '<img src="{{ url_for('static', filename='img/white_logo.png') }}" width="24" height="24">'}
+                </div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <div class="message-sender">${isUser ? 'You' : 'GoGoPrint AI'}</div>
+                        <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                    </div>
+                    <div class="message-text">
+                        <p>${message.content}</p>
+                    </div>
+                    ${!isUser && message.is_loading ? `
+                        <div class="message-loading">
+                            <div class="loading-dots">
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </div>
+                        </div>
+                    ` : ''}
+                    ${!isUser && message.model_preview ? `
+                        <div class="model-preview">
+                            <img src="{{ url_for('static', filename='img/') }}${message.model_name}" alt="Generated Image">
+                            <div class="model-controls">
+                                <div class="model-info">${message.model_name} (${message.model_size})</div>
+                                <div class="model-actions">
+                                    <button class="model-btn download-btn">Download</button>
+                                    <div class="download-options">
+                                        <button class="format-btn" data-format="png">PNG</button>
+                                        <button class="format-btn" data-format="3mf">3MF</button>
+                                        <button class="format-btn" data-format="stl">STL</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        chatMessages.insertAdjacentHTML('beforeend', messageHtml);
+        chatArea.scrollTop = chatArea.scrollHeight;
+        return messageHtml;
+    }
+    
+    // Function to update a message in the chat
+    function updateBotMessage(responseId, botResponse) {
+        console.log('Updating bot message with ID:', responseId, 'Response:', botResponse);
+        const botMessageElement = document.querySelector(`[data-message-id="${responseId}"]`);
+        if (botMessageElement) {
+            const messageContent = botMessageElement.querySelector('.message-content');
+            const messageText = messageContent.querySelector('.message-text p');
+            messageText.textContent = botResponse.content;
+            
+            // Remove loading indicator if present
+            const loadingIndicator = messageContent.querySelector('.message-loading');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+            
+            // Add model preview if available
+            if (botResponse.model_preview) {
+                const modelPreviewHtml = `
+                    <div class="model-preview">
+                        <img src="{{ url_for('static', filename='img/') }}${botResponse.model_name}" alt="Generated Image">
+                        <div class="model-controls">
+                            <div class="model-info">${botResponse.model_name} (${botResponse.model_size})</div>
+                            <div class="model-actions">
+                                <button class="model-btn download-btn">Download</button>
+                                <div class="download-options">
+                                    <button class="format-btn" data-format="png">PNG</button>
+                                    <button class="format-btn" data-format="3mf">3MF</button>
+                                    <button class="format-btn" data-format="stl">STL</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                messageContent.insertAdjacentHTML('beforeend', modelPreviewHtml);
+            }
+        } else {
+            console.error('Bot message element not found for ID:', responseId);
+        }
+    }
+    
+    // Handle message sending
+    sendButton.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    async function sendMessage() {
+        const message = messageInput.value.trim();
+        console.log('Sending message:', message);
+        
+        if (!message) {
+            console.log('Message is empty, not sending');
+            return;
+        }
+        
+        // Clear input and disable button
+        messageInput.value = '';
+        sendButton.disabled = true;
+        
+        // Add user message to chat
+        appendMessage({ content: message }, true);
+        
+        try {
+            console.log('Sending message to API, chat_id:', '{{ chat._id }}');
+            
+            // Step 1: Send the message to get a placeholder response
+            const response = await fetch('/chat/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: '{{ chat._id }}',
+                    message: message
+                })
+            });
+            
+            console.log('Response received from API:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Response data:', data);
+            
+            if (data.success) {
+                // Step 2: Add the placeholder bot response with loading indicator
+                const botMessageHtml = appendMessage({
+                    content: data.bot_response.content,
+                    is_loading: true
+                }, false);
+                
+                // Add a data attribute to the bot message for later reference
+                const botMessageElement = chatMessages.lastElementChild;
+                botMessageElement.setAttribute('data-message-id', data.bot_response_id);
+                
+                console.log('Starting image generation...');
+                
+                // Step 3: Generate the image in a separate request
+                const imageResponse = await fetch('/generate_image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: '{{ chat._id }}',
+                        message: message,
+                        bot_response_id: data.bot_response_id
+                    })
+                });
+                
+                if (!imageResponse.ok) {
+                    throw new Error(`HTTP error in image generation! status: ${imageResponse.status}`);
+                }
+                
+                const imageData = await imageResponse.json();
+                console.log('Image generation response:', imageData);
+                
+                if (imageData.success) {
+                    // Update the bot message with the generated image
+                    updateBotMessage(data.bot_response_id, imageData.bot_response);
+                } else {
+                    // Show error message
+                    updateBotMessage(data.bot_response_id, imageData.bot_response);
+                    console.error('Error generating image:', imageData.error);
+                }
+            } else {
+                console.error('API returned success: false:', data.error);
+                alert('Error: ' + (data.error || 'Failed to send message'));
+            }
+        } catch (error) {
+            console.error('Error in message sending process:', error);
+            alert(`Error sending message: ${error.message}. Please try again.`);
+            // Add a visible error message in the chat
+            appendMessage({
+                content: `Error: ${error.message}. Please try again.`
+            }, false);
+        }
+    }
+    
+    // Handle download button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('download-btn')) {
+            const modelPreview = e.target.closest('.model-preview');
+            const downloadOptions = modelPreview.querySelector('.download-options');
+            downloadOptions.classList.toggle('show');
+        } else if (e.target.classList.contains('format-btn')) {
+            const format = e.target.dataset.format;
+            const modelPreview = e.target.closest('.model-preview');
+            const imageUrl = modelPreview.querySelector('img').src;
+            
+            // Always download as PNG regardless of format button clicked
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = `generated_image.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Visual feedback - add active class
+            modelPreview.querySelectorAll('.format-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            e.target.classList.add('active');
+            
+            // Hide download options
+            modelPreview.querySelector('.download-options').classList.remove('show');
+        }
+    });
+});
+</script>
 </body>
 </html>

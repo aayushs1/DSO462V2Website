@@ -61,16 +61,19 @@
   .logo-container {
     display: flex;
     align-items: center;
+    gap: 8px;
   }
   
   .logo-container img {
-    margin-right: 10px;
+    width: 50px;
+    height: 50px;
   }
   
   .logo-container h1 {
     color: var(--text-light);
-    font-size: 20px;
+    font-size: 24px;
     font-weight: normal;
+    margin: 0;
   }
   
   .nav-links {
@@ -106,7 +109,10 @@
   
   /* Hero Section */
   .hero {
-    background-color: var(--dark-bg);
+    background: linear-gradient(rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.8)), url('../img/background_photo_2.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: var(--text-light);
     height: 100vh;
     display: flex;
@@ -324,14 +330,25 @@
     box-shadow: var(--box-shadow);
     text-align: center;
     transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
   }
   
   .plan-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--accent-color);
   }
   
   .plan-card.featured {
+    border: 2px solid transparent;
+  }
+  
+  .plan-card.featured:hover {
     border: 2px solid var(--accent-color);
   }
   
@@ -358,6 +375,7 @@
     list-style: none;
     margin-bottom: 30px;
     text-align: left;
+    flex-grow: 1;
   }
   
   .plan-features li {
@@ -373,8 +391,37 @@
     color: var(--accent-color);
   }
   
+  /* Make all buttons always visible */
   .plan-card .btn {
     width: 100%;
+    display: block;
+    margin-top: auto;
+    transition: all 0.3s ease;
+    opacity: 1;
+    position: relative;
+    z-index: 1;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 12px 25px;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+  }
+  
+  .plan-card .btn:hover {
+    background-color: var(--button-hover);
+    transform: translateY(-5px);
+  }
+  
+  .plan-card .btn-secondary {
+    background-color: var(--accent-color);
+    color: white;
+  }
+  
+  .plan-card .btn-secondary:hover {
+    background-color: var(--button-hover);
   }
   
   /* Testimonials */
