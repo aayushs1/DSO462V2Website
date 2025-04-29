@@ -14,7 +14,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'gogoprint_secret_key_dev')
 app.json_encoder = CustomJSONEncoder
 
 # MongoDB Connection
-client = MongoClient("mongodb+srv://test:1zrbAbwhLkw360dq@gogoprint.z5cf4yu.mongodb.net/?retryWrites=true&w=majority&appName=GoGoPrint", server_api=ServerApi('1'))
+client = MongoClient(app.secret_key, server_api=ServerApi('1'))
 db = client.gogoprint_db  # Database name
 
 # Initialize admin user if not exists
