@@ -226,7 +226,10 @@ Cooling: 100% after first layer"""
     })
     
     return messages
-
+# Add this new route for the root page
+@app.route('/')
+def root():
+    return render_template('home.html')
 # Add this new route for the home page
 @app.route('/home')
 def home():
