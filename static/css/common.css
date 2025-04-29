@@ -1,0 +1,233 @@
+/* GoGoPrint Common CSS - Consolidated from multiple files */
+:root {
+  /* Color Variables */
+  --primary-color: #FFA42B;
+  --accent-color: #f4a742;
+  --button-hover: #e09236;
+  --dark-bg: #1a1a1a;
+  --sidebar-bg: #222222;
+  --dark-section: #222222;
+  --light-bg: #f5f2ee;
+  --text-color: #333333;
+  --text-light: #ffffff;
+  --input-bg: #333333;
+  --card-bg: #ffffff;
+  --error-color: #ff5555;
+  --success-color: #55aa55;
+  
+  /* UI Variables */
+  --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --transition: all 0.3s ease;
+}
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Questrial', sans-serif;
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Container Styles */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Navigation Styles */
+.main-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 25px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: auto;
+}
+
+.nav-links a {
+  color: var(--text-light);
+  font-size: 15px;
+  transition: var(--transition);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.nav-links a:hover {
+  color: var(--accent-color);
+}
+
+.nav-links a.active {
+  color: var(--accent-color);
+  border: 2px solid var(--accent-color);
+}
+
+/* Button Styles */
+.btn {
+  display: inline-block;
+  padding: 12px 25px;
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--button-hover);
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-light);
+  backdrop-filter: blur(5px);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-dark {
+  background-color: #333;
+  color: white;
+}
+
+.btn-dark:hover {
+  background-color: #444;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: var(--transition);
+}
+
+input:focus {
+  outline: 2px solid var(--accent-color);
+}
+
+/* Alert Messages */
+.alert {
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: var(--border-radius);
+  font-size: 14px;
+}
+
+.alert-danger {
+  background-color: rgba(255, 85, 85, 0.2);
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+}
+
+.alert-success {
+  background-color: rgba(85, 170, 85, 0.2);
+  border: 1px solid var(--success-color);
+  color: var(--success-color);
+}
+
+/* Logo Container */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-container img {
+  width: 40px;
+  height: 40px;
+}
+
+.logo-container h1 {
+  font-size: 24px;
+  font-weight: normal;
+  margin: 0;
+  color: var(--text-light);
+}
+
+/* Auth Link Styles */
+.auth-link {
+  display: inline-block;
+  padding: 12px 15px;
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-light);
+  backdrop-filter: blur(5px);
+  width: 75px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-link:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.auth-link.highlight {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.auth-link.highlight:hover {
+  background-color: var(--button-hover);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+} 

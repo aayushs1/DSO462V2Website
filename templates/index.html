@@ -8,7 +8,9 @@
     <title>GoGoPrint - 3D Model AI Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='img/white_logo.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-HW0LJ3EF2K"></script>
@@ -20,6 +22,31 @@
           gtag('config', 'G-HW0LJ3EF2K');
         </script>
 <body>
+    <!-- Main Navigation Bar -->
+    <header>
+        <nav class="main-nav">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='img/white_logo.png') }}" alt="GoGoPrint Logo" width="40" height="40">
+                <h1>GoGoPrint</h1>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('blog_list') }}">Blog</a>
+                <a href="{{ url_for('contact') }}">Contact</a>
+                {% if 'user_id' in session %}
+                    <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+                    <a href="{{ url_for('logout') }}" class="auth-link">Logout</a>
+                    <a href="{{ url_for('dashboard') }}" class="user-icon">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="auth-link">Login</a>
+                    <a href="{{ url_for('register') }}" class="auth-link highlight">Sign Up</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
 <div class="container">
     <div class="sidebar">
         <div class="logo">
@@ -27,7 +54,7 @@
             <div class="logo-text">GoGoPrint</div>
         </div>
     
-        <a href="{{ url_for('index') }}" class="new-chat-btn">
+        <a href="{{ url_for('dashboard') }}" class="new-chat-btn">
             <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             New Chat
         </a>
@@ -65,7 +92,7 @@
 
     <div class="main-content">
         <div class="top-nav">
-            <div class="nav-title">3D Model AI Assistant</div>
+            <div class="nav-title">GoGoPrint Chat</div>
         </div>
 
         <div class="chat-area" id="chat-area">

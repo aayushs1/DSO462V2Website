@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='img/white_logo.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HW0LJ3EF2K"></script>
@@ -27,7 +28,7 @@
             <h1>GoGoPrint</h1>
         </div>
         
-        <h2>Create an account</h2>
+        <h2>Register</h2>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

@@ -4,3 +4,8 @@ pymongo
 werkzeug
 gunicorn
 dotenv
+openai
+Pillow
+requests
+markdown
+bleach

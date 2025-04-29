@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Check if we're in an existing chat by looking at the URL
     const pathParts = window.location.pathname.split('/');
-    if (pathParts.length > 2 && pathParts[1] === 'chat') {
+    if (pathParts.length > 2 && pathParts[1] === 'dashboard') {
         currentChatId = pathParts[2]; // Set the current chat ID
     }
 });
@@ -206,7 +206,7 @@ function createNewChat() {
         }
         
         // Redirect to the new chat
-        window.location.href = `/chat/${currentChatId}`;
+        window.location.href = `/dashboard/${currentChatId}`;
     })
     .catch(error => {
         hideLoading();

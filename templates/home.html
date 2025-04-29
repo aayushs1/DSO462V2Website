@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='img/white_logo.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HW0LJ3EF2K"></script>
@@ -22,17 +23,33 @@
 <body>
     <header>
         <nav class="main-nav">
-            <div class="logo-container">
+            <a href="{{ url_for('home') }}" class="logo-container">
                 <img src="{{ url_for('static', filename='img/white_logo.png') }}" alt="GoGoPrint Logo" width="40" height="40">
                 <h1>GoGoPrint</h1>
-            </div>
+            </a>
             <div class="nav-links">
-                <a href="#about">About</a>
-                <a href="#services">Services</a>
-                <a href="#plans">Plans</a>
-                <a href="#testimonials">Testimonials</a>
-                <a href="{{ url_for('login') }}" class="auth-link">Login</a>
-                <a href="{{ url_for('register') }}" class="auth-link highlight">Sign Up</a>
+                <a href="{{ url_for('home') }}" class="active">Home</a>
+                <a href="{{ url_for('blog_list') }}">Blog</a>
+                <a href="{{ url_for('contact') }}">Contact</a>
+                {% if 'user_id' in session and user_name %}
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('logout') }}" class="auth-link">Logout</a>
+                    <div class="user-icon">
+                        {{ user_name[0] }}
+                        <div class="user-dropdown">
+                            <div class="user-dropdown-header">
+                                <div class="user-dropdown-avatar">{{ user_name[0] }}</div>
+                                <div class="user-dropdown-info">
+                                    <div class="user-dropdown-name">{{ user_name }}</div>
+                                    <div class="user-dropdown-email">{{ user_email }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="auth-link">Login</a>
+                    <a href="{{ url_for('register') }}" class="auth-link highlight">Sign Up</a>
+                {% endif %}
             </div>
         </nav>
     </header>
@@ -104,7 +121,7 @@
                         <li>Email support</li>
                         <li>Basic tutorials</li>
                     </ul>
-                    <a href="{{ url_for('register') }}" class="btn btn-secondary">Get Started</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
                 </div>
                 <div class="plan-card featured">
                     <h3>Premium</h3>
@@ -130,7 +147,7 @@
                         <li>Custom API access</li>
                         <li>Bulk processing</li>
                     </ul>
-                    <a href="#" class="btn btn-secondary">Contact Us</a>
+                    <a href="{{ url_for('contact') }}" class="btn btn-primary">Contact Us</a>
                 </div>
             </div>
         </div>
@@ -182,11 +199,11 @@
                         <a href="#">About Us</a>
                         <a href="#">Our Team</a>
                         <a href="#">Careers</a>
-                        <a href="#">Contact</a>
+                        <a href="{{ url_for('contact') }}">Contact</a>
                     </div>
                     <div class="footer-column">
                         <h4>Resources</h4>
-                        <a href="#">Blog</a>
+                        <a href="{{ url_for('blog_list') }}">Blog</a>
                         <a href="#">Tutorials</a>
                         <a href="#">Support</a>
                         <a href="#">Documentation</a>
@@ -202,20 +219,13 @@
             <div class="footer-bottom">
                 <p>&copy; 2025 GoGoPrint. All rights reserved.</p>
                 <div class="footer-social">
-                    <a href="#">Twitter</a>
-                    <a href="#">Facebook</a>
-                    <a href="#">Instagram</a>
-                    <a href="#">LinkedIn</a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
                 </div>
             </div>
         </div>
     </footer>
-
-    <div class="chat-widget">
-        <a href="{{ url_for('login') }}" class="chat-button">
-            <span class="chat-icon">💬</span>
-            <span>Chat with AI</span>
-        </a>
-    </div>
 </body>
 </html>
