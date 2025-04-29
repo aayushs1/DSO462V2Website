@@ -177,13 +177,95 @@
         </div>
     </section>
 
-    <section class="cta">
+    <section id="faq" class="faq">
         <div class="container">
-            <h2>Get to Know Us</h2>
-            <p>Ready to revolutionize your 3D printing experience with AI-powered tools?</p>
-            <a href="{{ url_for('register') }}" class="btn btn-primary">Join GoGoPrint Today</a>
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What is GoGoPrint?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>GoGoPrint is your ultimate 3D printing companion! We're not just another 3D printing service - we're a revolutionary platform that combines cutting-edge AI technology with user-friendly design. Whether you're a hobbyist looking to bring your ideas to life or a professional seeking to streamline your workflow, GoGoPrint provides the tools and support you need to succeed in the world of 3D printing.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How does the AI model generation work?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Imagine having a creative partner that understands your vision! Our AI system uses advanced natural language processing and machine learning algorithms to transform your ideas into detailed 3D models. Simply describe what you want to create - whether it's a custom phone case, a unique piece of jewelry, or a complex mechanical part - and our AI will generate a precise CAD file ready for printing. The more details you provide, the more accurate the result!</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What file formats are supported?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We're proud to support all major 3D printing file formats! From the industry-standard STL and OBJ files to advanced G-code formats, our platform ensures compatibility with virtually any 3D printer on the market. We even support specialized formats like AMF and 3MF for those who need advanced features like color and material information. Plus, our automatic optimization system ensures your files are perfectly formatted for your specific printer model.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Do I need to be an expert to use GoGoPrint?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely not! We've designed GoGoPrint to be accessible to everyone, from complete beginners to seasoned professionals. Our intuitive interface guides you through every step of the process, with helpful tooltips and video tutorials available at every turn. Even if you've never touched a 3D printer before, you'll be creating amazing prints in no time. And for the experts out there, we offer advanced features and customization options to satisfy your technical needs.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What kind of support do you offer?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We're here for you 24/7! Our support team consists of experienced 3D printing enthusiasts and technical experts who are passionate about helping you succeed. Basic users get access to our comprehensive knowledge base, email support, and community forums. Premium users enjoy priority support with dedicated agents, live chat assistance, and even video consultations for complex projects. We believe in providing the support you need, when you need it!</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Can I cancel my subscription anytime?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, you have complete control over your subscription! We believe in transparency and flexibility, which is why we offer hassle-free cancellation at any time. Your access will continue until the end of your current billing period, and you can reactivate your subscription whenever you're ready to continue your 3D printing journey. No hidden fees, no complicated processes - just straightforward service that puts you in control.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const toggle = item.querySelector('.faq-toggle');
+                
+                question.addEventListener('click', () => {
+                    const isOpen = answer.style.maxHeight;
+                    
+                    // Close all other answers
+                    document.querySelectorAll('.faq-answer').forEach(otherAnswer => {
+                        otherAnswer.style.maxHeight = null;
+                        otherAnswer.parentElement.querySelector('.faq-toggle').textContent = '+';
+                    });
+                    
+                    // Toggle current answer
+                    if (!isOpen) {
+                        answer.style.maxHeight = answer.scrollHeight + 'px';
+                        toggle.textContent = '-';
+                    }
+                });
+            });
+        });
+    </script>
 
     <footer>
         <div class="container">

@@ -23,17 +23,25 @@ body {
   box-shadow: var(--box-shadow);
   padding: 40px;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   text-align: center;
 }
 
 .logo-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .logo-container img {
   margin-right: 15px;
+}
+
+.logo-container h1 {
+  font-size: 36px;
+  margin: 0;
 }
 
 h2 {

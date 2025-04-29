@@ -226,11 +226,12 @@ Cooling: 100% after first layer"""
     })
     
     return messages
-# Add this new route for the root page
+
+# Add this new route for the home page
 @app.route('/')
 def root():
     return render_template('home.html')
-# Add this new route for the home page
+
 @app.route('/home')
 def home():
     return render_template('home.html')
@@ -1576,6 +1577,10 @@ Remember, calibration is not a one-time process but an ongoing refinement. As yo
     result = db.blog_posts.insert_many(sample_posts)
     
     return redirect(url_for('blog_list'))
+
+@app.route('/')
+def index():
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     # Create indexes for better performance
